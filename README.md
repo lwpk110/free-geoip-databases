@@ -23,21 +23,21 @@
 
 访问 [**Releases 页面**](../../releases/latest) 下载最新数据库文件：
 
-| 数据库 | 说明 | 下载链接 |
-|--------|------|----------|
-| **GeoLite2-City** | 城市级别地理位置数据 | [下载](../../releases/latest/download/GeoLite2-City.mmdb) |
-| **GeoLite2-Country** | 国家级别地理位置数据 | [下载](../../releases/latest/download/GeoLite2-Country.mmdb) |
-| **GeoLite2-ASN** | ASN 网络运营商数据 | [下载](../../releases/latest/download/GeoLite2-ASN.mmdb) |
+| 数据库 | 说明 | 文件大小 | 授权 | 下载链接 |
+|--------|------|---------|------|----------|
+| **GeoLite2-City** | 城市级别地理位置数据 | ~70 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-City.mmdb) |
+| **GeoLite2-Country** | 国家级别地理位置数据 | ~6 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-Country.mmdb) |
+| **GeoLite2-ASN** | ASN 网络运营商数据 | ~8 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-ASN.mmdb) |
 
 ### DB-IP 数据库
 
 查看 [**DB-IP Releases**](../../releases?q=dbip&expanded=true) 下载 DB-IP 数据库：
 
-| 数据库 | 说明 | 授权 |
-|--------|------|------|
-| **DB-IP City Lite** | 城市级别地理位置数据 | CC BY 4.0 |
-| **DB-IP Country Lite** | 国家级别地理位置数据 | CC BY 4.0 |
-| **DB-IP ASN Lite** | ASN 网络运营商数据 | CC BY 4.0 |
+| 数据库 | 说明 | 文件大小 | 授权 | 下载链接 |
+|--------|------|---------|------|----------|
+| **DB-IP City Lite** | 城市级别地理位置数据 | ~130 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
+| **DB-IP Country Lite** | 国家级别地理位置数据 | ~7 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
+| **DB-IP ASN Lite** | ASN 网络运营商数据 | ~9 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
 
 > **注意**: DB-IP 数据库文件名包含年月信息，如 `dbip-city-lite-2024-11.mmdb`
 
@@ -55,6 +55,16 @@ curl -L -o GeoLite2-Country.mmdb \
 # 下载 ASN 数据库
 curl -L -o GeoLite2-ASN.mmdb \
   https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-ASN.mmdb
+```
+
+或使用项目提供的下载脚本：
+
+```bash
+# MaxMind GeoLite2
+./scripts/download_geolite2.sh <YOUR_LICENSE_KEY>
+
+# DB-IP (无需 License Key)
+./scripts/download_dbip.sh all
 ```
 
 ## 🚀 使用示例
@@ -163,21 +173,58 @@ maxmind.open('GeoLite2-City.mmdb').then(lookup => {
 
 ## 🛠️ 本地运行测试工具
 
-本项目提供了一个简单的 Go 语言查询工具，可以测试数据库文件：
+本项目提供了简单的 Go 语言查询工具，可以测试数据库文件。
+
+### 项目结构
+
+```
+free-geoip-databases/
+├── .github/workflows/    # GitHub Actions 自动化工作流
+│   ├── update-geolite2.yml
+│   ├── update-dbip.yml
+│   └── test-database.yml
+├── scripts/              # 下载脚本
+│   ├── download_geolite2.sh
+│   └── download_dbip.sh
+├── examples/             # 示例代码
+│   ├── query/            # IP 查询示例
+│   │   └── main.go
+│   └── test/             # 测试程序
+│       └── test_cities.go
+├── docs/                 # 详细文档
+│   ├── QUICKSTART.md
+│   └── TESTING.md
+├── README.md
+├── LICENSE
+├── go.mod
+└── go.sum
+```
+
+### 快速开始
 
 ```bash
 # 1. 克隆仓库
 git clone https://github.com/lwpk110/free-geoip-databases.git
 cd free-geoip-databases
 
-# 2. 下载数据库文件（见上方下载说明）
+# 2. 下载数据库文件
+./scripts/download_geolite2.sh <YOUR_LICENSE_KEY>
+# 或使用 DB-IP (无需 License Key)
+./scripts/download_dbip.sh all
 
 # 3. 安装依赖
 go mod tidy
 
-# 4. 运行测试工具
+# 4. 运行查询示例
+cd examples/query
 go run main.go
+
+# 5. 运行测试
+cd ../test
+go run test_cities.go
 ```
+
+更多详情请查看 [examples/README.md](examples/README.md) 和 [docs/TESTING.md](docs/TESTING.md)。
 
 ## ⚙️ Fork 本项目实现自动更新
 

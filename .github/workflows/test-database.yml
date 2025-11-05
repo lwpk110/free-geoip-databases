@@ -42,7 +42,22 @@ jobs:
       - name: Run tests
         run: |
           echo "Running GeoIP query tests..."
-          go run test_cities.go
+
+          # 检查是否存在测试文件
+          if [ -f "examples/test/test_cities.go" ]; then
+            echo "Running examples/test/test_cities.go..."
+            cd examples/test
+            go run test_cities.go
+            cd ../..
+          elif [ -f "examples/query/main.go" ]; then
+            echo "Running examples/query/main.go..."
+            cd examples/query
+            go run main.go
+            cd ../..
+          else
+            echo "No test files found"
+            exit 1
+          fi
 
           echo ""
           echo "✓ Database test completed successfully"

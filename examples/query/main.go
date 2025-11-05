@@ -123,8 +123,8 @@ func printAllFields(ipStr string, record *geoip2.City) {
 }
 
 func main() {
-	// 打开 GeoLite2-City 数据库
-	db, err := geoip2.Open("GeoLite2-City.mmdb")
+	// 打开数据库 (相对于项目根目录)
+	db, err := geoip2.Open("../../GeoLite2-City.mmdb")
 	if err != nil {
 		log.Fatal(err)
 	}
