@@ -1,0 +1,58 @@
+name: Test GeoIP Database
+
+on:
+  # 在 Release 创建后运行测试
+  release:
+    types: [published]
+
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  test-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Download latest database from release
+        run: |
+          # 获取最新的 release
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+
+          # 下载 GeoLite2-City.mmdb
+          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "GeoLite2-City.mmdb") | .browser_download_url')
+          if [ -n "$CITY_URL" ]; then
+            echo "Downloading GeoLite2-City.mmdb from $CITY_URL"
+            curl -L -o GeoLite2-City.mmdb "$CITY_URL"
+          else
+            echo "GeoLite2-City.mmdb not found in latest release"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Run tests
+        run: |
+          echo "Running GeoIP query tests..."
+          go run test_cities.go
+
+          echo ""
+          echo "✓ Database test completed successfully"
+
+      - name: Verify database integrity
+        run: |
+          if [ -f "GeoLite2-City.mmdb" ]; then
+            FILE_SIZE=$(du -h GeoLite2-City.mmdb | cut -f1)
+            echo "✓ GeoLite2-City.mmdb verified (Size: $FILE_SIZE)"
+          else
+            echo "✗ GeoLite2-City.mmdb not found"
+            exit 1
+          fi

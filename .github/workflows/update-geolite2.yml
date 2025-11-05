@@ -1,0 +1,145 @@
+name: Update GeoLite2 Database
+
+on:
+  # 每周二和周五 UTC 时间 10:00 运行（北京时间 18:00）
+  schedule:
+    - cron: '0 10 * * 2,5'
+
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download GeoLite2-City database
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+        run: |
+          echo "Downloading GeoLite2-City database..."
+          curl -L -o GeoLite2-City.tar.gz \
+            "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${MAXMIND_LICENSE_KEY}&suffix=tar.gz"
+
+          # 解压文件
+          tar -xzf GeoLite2-City.tar.gz
+
+          # 查找并移动 .mmdb 文件
+          find . -name "GeoLite2-City.mmdb" -exec mv {} ./ \;
+
+          # 清理临时文件
+          rm -rf GeoLite2-City_* GeoLite2-City.tar.gz
+
+      - name: Download GeoLite2-Country database
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+        run: |
+          echo "Downloading GeoLite2-Country database..."
+          curl -L -o GeoLite2-Country.tar.gz \
+            "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${MAXMIND_LICENSE_KEY}&suffix=tar.gz"
+
+          # 解压文件
+          tar -xzf GeoLite2-Country.tar.gz
+
+          # 查找并移动 .mmdb 文件
+          find . -name "GeoLite2-Country.mmdb" -exec mv {} ./ \;
+
+          # 清理临时文件
+          rm -rf GeoLite2-Country_* GeoLite2-Country.tar.gz
+
+      - name: Download GeoLite2-ASN database
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+        run: |
+          echo "Downloading GeoLite2-ASN database..."
+          curl -L -o GeoLite2-ASN.tar.gz \
+            "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${MAXMIND_LICENSE_KEY}&suffix=tar.gz"
+
+          # 解压文件
+          tar -xzf GeoLite2-ASN.tar.gz
+
+          # 查找并移动 .mmdb 文件
+          find . -name "GeoLite2-ASN.mmdb" -exec mv {} ./ \;
+
+          # 清理临时文件
+          rm -rf GeoLite2-ASN_* GeoLite2-ASN.tar.gz
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Check if databases were downloaded
+        id: check
+        run: |
+          if [ -f "GeoLite2-City.mmdb" ] && [ -f "GeoLite2-Country.mmdb" ] && [ -f "GeoLite2-ASN.mmdb" ]; then
+            echo "Database files found"
+            echo "success=true" >> $GITHUB_OUTPUT
+
+            # 获取文件大小
+            CITY_SIZE=$(du -h GeoLite2-City.mmdb | cut -f1)
+            COUNTRY_SIZE=$(du -h GeoLite2-Country.mmdb | cut -f1)
+            ASN_SIZE=$(du -h GeoLite2-ASN.mmdb | cut -f1)
+
+            echo "city_size=${CITY_SIZE}" >> $GITHUB_OUTPUT
+            echo "country_size=${COUNTRY_SIZE}" >> $GITHUB_OUTPUT
+            echo "asn_size=${ASN_SIZE}" >> $GITHUB_OUTPUT
+          else
+            echo "Database files not found"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Create Release
+        if: steps.check.outputs.success == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.date.outputs.date }}
+          name: GeoLite2 Database - ${{ steps.date.outputs.date }}
+          body: |
+            ## GeoLite2 数据库更新
+
+            **更新日期**: ${{ steps.date.outputs.date }}
+
+            ### 📦 包含文件
+
+            - **GeoLite2-City.mmdb** (${{ steps.check.outputs.city_size }}) - 城市级别 IP 地理位置数据库
+            - **GeoLite2-Country.mmdb** (${{ steps.check.outputs.country_size }}) - 国家级别 IP 地理位置数据库
+            - **GeoLite2-ASN.mmdb** (${{ steps.check.outputs.asn_size }}) - ASN 数据库
+
+            ### 📝 使用说明
+
+            1. 下载所需的 `.mmdb` 文件
+            2. 将文件放置在你的项目目录中
+            3. 使用 MaxMind GeoIP2 库读取数据库
+
+            ### 🔗 相关链接
+
+            - [MaxMind GeoLite2 官方文档](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
+            - [项目仓库](https://github.com/${{ github.repository }})
+
+            ### ⚠️ 注意事项
+
+            本数据库由 MaxMind 提供，遵循 [GeoLite2 最终用户许可协议](https://www.maxmind.com/en/geolite2/eula)。
+            数据库每周更新两次（周二和周五）。
+
+            ---
+
+            *此 Release 由 GitHub Actions 自动生成*
+          files: |
+            GeoLite2-City.mmdb
+            GeoLite2-Country.mmdb
+            GeoLite2-ASN.mmdb
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "⚠️ 数据库更新失败"
+          echo "请检查 MaxMind License Key 是否正确"
+          echo "或访问 MaxMind 网站确认数据库是否可用"
