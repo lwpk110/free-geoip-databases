@@ -1,9 +1,9 @@
-# Free GeoIP Database - Auto-Updated 🌍
+# Free GeoIP Databases - Auto-Updated 🌍
 
-[![Update GeoLite2 Database](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/update-geolite2.yml)
+[![Update GeoLite2 Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **免费、自动更新的 GeoIP 数据库** - 提供 MaxMind GeoLite2 和 DB-IP 数据库的自动化下载和发布服务
+> **免费、自动更新的 GeoIP 数据库集合** - 提供 MaxMind GeoLite2、DB-IP 等数据库的自动化下载和发布服务
 
 无需注册 MaxMind 账号，无需申请 License Key，直接从 [Releases](../../releases) 下载最新数据库！
 
@@ -30,15 +30,15 @@
 ```bash
 # 下载 City 数据库
 curl -L -o GeoLite2-City.mmdb \
-  https://github.com/YOUR_USERNAME/YOUR_REPO/releases/latest/download/GeoLite2-City.mmdb
+  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-City.mmdb
 
 # 下载 Country 数据库
 curl -L -o GeoLite2-Country.mmdb \
-  https://github.com/YOUR_USERNAME/YOUR_REPO/releases/latest/download/GeoLite2-Country.mmdb
+  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-Country.mmdb
 
 # 下载 ASN 数据库
 curl -L -o GeoLite2-ASN.mmdb \
-  https://github.com/YOUR_USERNAME/YOUR_REPO/releases/latest/download/GeoLite2-ASN.mmdb
+  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-ASN.mmdb
 ```
 
 ## 🚀 使用示例
@@ -131,8 +131,8 @@ maxmind.open('GeoLite2-City.mmdb').then(lookup => {
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
+git clone https://github.com/lwpk110/free-geoip-databases.git
+cd free-geoip-databases
 
 # 2. 下载数据库文件（见上方下载说明）
 
