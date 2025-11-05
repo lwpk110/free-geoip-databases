@@ -1,0 +1,154 @@
+name: Update DB-IP Database
+
+on:
+  # 每月1号和15号 UTC 时间 10:00 运行（北京时间 18:00）
+  schedule:
+    - cron: '0 10 1,15 * *'
+
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download DB-IP City Lite database
+        run: |
+          echo "Downloading DB-IP City Lite database..."
+          # 下载最新的免费版本
+          curl -L -o dbip-city-lite.mmdb.gz \
+            "https://download.db-ip.com/free/dbip-city-lite-$(date +%Y-%m).mmdb.gz"
+
+          # 解压文件
+          gunzip dbip-city-lite.mmdb.gz
+
+          # 重命名为标准格式
+          mv dbip-city-lite.mmdb dbip-city-lite-$(date +%Y-%m).mmdb
+
+      - name: Download DB-IP Country Lite database
+        run: |
+          echo "Downloading DB-IP Country Lite database..."
+          # 下载最新的免费版本
+          curl -L -o dbip-country-lite.mmdb.gz \
+            "https://download.db-ip.com/free/dbip-country-lite-$(date +%Y-%m).mmdb.gz"
+
+          # 解压文件
+          gunzip dbip-country-lite.mmdb.gz
+
+          # 重命名为标准格式
+          mv dbip-country-lite.mmdb dbip-country-lite-$(date +%Y-%m).mmdb
+
+      - name: Download DB-IP ASN Lite database
+        run: |
+          echo "Downloading DB-IP ASN Lite database..."
+          # 下载最新的免费版本
+          curl -L -o dbip-asn-lite.mmdb.gz \
+            "https://download.db-ip.com/free/dbip-asn-lite-$(date +%Y-%m).mmdb.gz"
+
+          # 解压文件
+          gunzip dbip-asn-lite.mmdb.gz
+
+          # 重命名为标准格式
+          mv dbip-asn-lite.mmdb dbip-asn-lite-$(date +%Y-%m).mmdb
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Get year-month for filename
+        id: yearmonth
+        run: echo "yearmonth=$(date +'%Y-%m')" >> $GITHUB_OUTPUT
+
+      - name: Check if databases were downloaded
+        id: check
+        run: |
+          CITY_FILE="dbip-city-lite-${{ steps.yearmonth.outputs.yearmonth }}.mmdb"
+          COUNTRY_FILE="dbip-country-lite-${{ steps.yearmonth.outputs.yearmonth }}.mmdb"
+          ASN_FILE="dbip-asn-lite-${{ steps.yearmonth.outputs.yearmonth }}.mmdb"
+
+          if [ -f "$CITY_FILE" ] && [ -f "$COUNTRY_FILE" ] && [ -f "$ASN_FILE" ]; then
+            echo "Database files found"
+            echo "success=true" >> $GITHUB_OUTPUT
+
+            # 获取文件大小
+            CITY_SIZE=$(du -h "$CITY_FILE" | cut -f1)
+            COUNTRY_SIZE=$(du -h "$COUNTRY_FILE" | cut -f1)
+            ASN_SIZE=$(du -h "$ASN_FILE" | cut -f1)
+
+            echo "city_size=${CITY_SIZE}" >> $GITHUB_OUTPUT
+            echo "country_size=${COUNTRY_SIZE}" >> $GITHUB_OUTPUT
+            echo "asn_size=${ASN_SIZE}" >> $GITHUB_OUTPUT
+
+            echo "city_file=${CITY_FILE}" >> $GITHUB_OUTPUT
+            echo "country_file=${COUNTRY_FILE}" >> $GITHUB_OUTPUT
+            echo "asn_file=${ASN_FILE}" >> $GITHUB_OUTPUT
+          else
+            echo "Database files not found"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Create Release
+        if: steps.check.outputs.success == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: dbip-${{ steps.date.outputs.date }}
+          name: DB-IP Database - ${{ steps.date.outputs.date }}
+          body: |
+            ## DB-IP 数据库更新
+
+            **更新日期**: ${{ steps.date.outputs.date }}
+            **数据库月份**: ${{ steps.yearmonth.outputs.yearmonth }}
+
+            ### 📦 包含文件
+
+            - **${{ steps.check.outputs.city_file }}** (${{ steps.check.outputs.city_size }}) - 城市级别 IP 地理位置数据库
+            - **${{ steps.check.outputs.country_file }}** (${{ steps.check.outputs.country_size }}) - 国家级别 IP 地理位置数据库
+            - **${{ steps.check.outputs.asn_file }}** (${{ steps.check.outputs.asn_size }}) - ASN 数据库
+
+            ### 📝 使用说明
+
+            1. 下载所需的 `.mmdb` 文件
+            2. 将文件放置在你的项目目录中
+            3. 使用兼容 MaxMind DB 格式的库读取数据库（如 MaxMind GeoIP2 库）
+
+            ### 🔗 相关链接
+
+            - [DB-IP 官方网站](https://db-ip.com/)
+            - [DB-IP 免费数据库](https://db-ip.com/db/download/ip-to-city-lite)
+            - [项目仓库](https://github.com/${{ github.repository }})
+
+            ### ⚠️ 注意事项
+
+            - 本数据库由 DB-IP 提供，使用 [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/) 授权
+            - 免费版本数据库每月更新一次
+            - DB-IP 数据库与 MaxMind GeoIP2 格式兼容，可以使用相同的读取库
+
+            ### 📊 DB-IP vs GeoLite2
+
+            - **优势**: DB-IP 提供更自由的授权协议（CC BY 4.0）
+            - **更新频率**: 免费版每月更新（MaxMind GeoLite2 每周更新两次）
+            - **准确性**: 两者准确性相当，具体取决于地区
+
+            ---
+
+            *此 Release 由 GitHub Actions 自动生成*
+          files: |
+            ${{ steps.check.outputs.city_file }}
+            ${{ steps.check.outputs.country_file }}
+            ${{ steps.check.outputs.asn_file }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GEOIP_ACCESS_TOKEN }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "⚠️ DB-IP 数据库更新失败"
+          echo "请检查 DB-IP 下载链接是否可用"
+          echo "或访问 https://db-ip.com 确认数据库是否可用"

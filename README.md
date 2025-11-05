@@ -1,6 +1,7 @@
 # Free GeoIP Databases - Auto-Updated 🌍
 
 [![Update GeoLite2 Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml)
+[![Update DB-IP Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **免费、自动更新的 GeoIP 数据库集合** - 提供 MaxMind GeoLite2、DB-IP 等数据库的自动化下载和发布服务
@@ -9,13 +10,16 @@
 
 ## 🎯 为什么选择这个项目？
 
-- ✅ **完全免费** - 无需注册，无需 License Key
-- 🤖 **自动更新** - 每周自动跟随 MaxMind 官方更新（周二、周五）
-- � **开箱即用** - 直接下载 `.mmdb` 文件即可使用
-- �🚀 **多种数据库** - 提供 City、Country、ASN 等多种数据库
+- ✅ **完全免费** - 无需注册，无需 License Key（DB-IP 版本）
+- 🤖 **自动更新** - GeoLite2 每周更新（周二、周五），DB-IP 每月更新（1号、15号）
+- 📦 **开箱即用** - 直接下载 `.mmdb` 文件即可使用
+-  **多种数据库** - 提供 City、Country、ASN 等多种数据库
+- 🌐 **多种来源** - 同时提供 MaxMind GeoLite2 和 DB-IP 数据库
 - ✅ **质量保证** - 自动化测试确保数据库完整性
 
-## � 快速下载
+## 📥 快速下载
+
+### MaxMind GeoLite2 数据库
 
 访问 [**Releases 页面**](../../releases/latest) 下载最新数据库文件：
 
@@ -24,6 +28,18 @@
 | **GeoLite2-City** | 城市级别地理位置数据 | [下载](../../releases/latest/download/GeoLite2-City.mmdb) |
 | **GeoLite2-Country** | 国家级别地理位置数据 | [下载](../../releases/latest/download/GeoLite2-Country.mmdb) |
 | **GeoLite2-ASN** | ASN 网络运营商数据 | [下载](../../releases/latest/download/GeoLite2-ASN.mmdb) |
+
+### DB-IP 数据库
+
+查看 [**DB-IP Releases**](../../releases?q=dbip&expanded=true) 下载 DB-IP 数据库：
+
+| 数据库 | 说明 | 授权 |
+|--------|------|------|
+| **DB-IP City Lite** | 城市级别地理位置数据 | CC BY 4.0 |
+| **DB-IP Country Lite** | 国家级别地理位置数据 | CC BY 4.0 |
+| **DB-IP ASN Lite** | ASN 网络运营商数据 | CC BY 4.0 |
+
+> **注意**: DB-IP 数据库文件名包含年月信息，如 `dbip-city-lite-2024-11.mmdb`
 
 ### 命令行下载
 
@@ -113,11 +129,31 @@ maxmind.open('GeoLite2-City.mmdb').then(lookup => {
 
 ## 🔄 更新频率
 
+### MaxMind GeoLite2
 - **自动更新**: 每周二和周五（UTC 10:00 / 北京时间 18:00）
 - **数据源**: MaxMind 官方 GeoLite2 数据库
 - **更新策略**: 跟随 MaxMind 官方更新周期
 
-## 📊 支持的数据库
+### DB-IP
+- **自动更新**: 每月1号和15号（UTC 10:00 / 北京时间 18:00）
+- **数据源**: DB-IP 官方免费数据库
+- **更新策略**: 下载当月最新版本
+- **授权**: Creative Commons Attribution 4.0 (CC BY 4.0)
+
+## 📊 数据库对比
+
+### MaxMind GeoLite2 vs DB-IP
+
+| 特性 | GeoLite2 | DB-IP Lite |
+|------|----------|-----------|
+| **授权** | 需遵守 MaxMind EULA | CC BY 4.0（更自由） |
+| **更新频率** | 每周2次 | 每月1次 |
+| **数据准确性** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **文件格式** | .mmdb | .mmdb（兼容） |
+| **使用限制** | 非商业用途优先 | 署名即可商用 |
+| **注册要求** | 需要（本项目已处理） | 无需注册 |
+
+### 支持的数据库类型
 
 | 数据库类型 | 包含信息 | 文件大小 |
 |-----------|---------|----------|
@@ -145,7 +181,9 @@ go run main.go
 
 ## ⚙️ Fork 本项目实现自动更新
 
-如果你想 Fork 本项目并实现自己的自动更新：
+### 配置 MaxMind GeoLite2 自动更新
+
+如果你想 Fork 本项目并实现自己的 GeoLite2 自动更新：
 
 1. **Fork 本仓库**
 
@@ -155,21 +193,44 @@ go run main.go
    - 在你的仓库中：Settings → Secrets and variables → Actions
    - 添加 Secret: `MAXMIND_LICENSE_KEY`
 
-3. **启用 GitHub Actions**
+3. **添加 GitHub Token**
+   - 在你的仓库中：Settings → Secrets and variables → Actions
+   - 添加 Secret: `GEOIP_ACCESS_TOKEN`（使用有 repo 权限的 Personal Access Token）
+
+4. **启用 GitHub Actions**
    - 工作流将自动运行
    - 或手动触发：Actions → Update GeoLite2 Database → Run workflow
+
+### 配置 DB-IP 自动更新
+
+DB-IP 数据库无需任何配置，只需：
+
+1. **Fork 本仓库**
+
+2. **添加 GitHub Token**
+   - 在你的仓库中：Settings → Secrets and variables → Actions
+   - 添加 Secret: `GEOIP_ACCESS_TOKEN`
+
+3. **启用 GitHub Actions**
+   - DB-IP 工作流会自动运行
+   - 或手动触发：Actions → Update DB-IP Database → Run workflow
+
+> **提示**: DB-IP 不需要注册账号或 License Key，完全免费且开放！
 
 ## 📋 许可与声明
 
 - **项目代码**: MIT License
 - **GeoLite2 数据库**: 由 MaxMind 提供，需遵守 [MaxMind EULA](https://www.maxmind.com/en/geolite2/eula)
-- **使用声明**: This product includes GeoLite2 data created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
+  - This product includes GeoLite2 data created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
+- **DB-IP 数据库**: 由 DB-IP 提供，使用 [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) 授权
+  - 使用时需要署名：Contains data from https://db-ip.com
 
 ### 重要提示
 
-- GeoLite2 是免费版本，精确度低于商业版 GeoIP2
-- 仅供学习、测试和非商业用途
-- 商业用途请购买 MaxMind 商业授权
+- GeoLite2 和 DB-IP Lite 都是免费版本，精确度低于商业版
+- GeoLite2: 仅供学习、测试和非商业用途，商业用途请购买 MaxMind 商业授权
+- DB-IP: 可商用，但需要署名（Attribution required）
+- 如需更高精确度或商业支持，请考虑购买商业版数据库
 
 ## 🌟 Star History
 
