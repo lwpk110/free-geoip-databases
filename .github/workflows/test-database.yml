@@ -23,16 +23,28 @@ jobs:
 
       - name: Download latest database from release
         run: |
-          # 获取最新的 release
-          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          # 获取最新的 GeoLite2 release
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '[.[] | select(.tag_name | startswith("geolite2-"))] | first')
 
-          # 下载 GeoLite2-City.mmdb
-          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "GeoLite2-City.mmdb") | .browser_download_url')
-          if [ -n "$CITY_URL" ]; then
-            echo "Downloading GeoLite2-City.mmdb from $CITY_URL"
+          if [ "$LATEST_RELEASE" == "null" ] || [ -z "$LATEST_RELEASE" ]; then
+            echo "No GeoLite2 release found"
+            exit 1
+          fi
+
+          echo "Found release: $(echo "$LATEST_RELEASE" | jq -r '.tag_name')"
+
+          # 查找并下载 GeoLite2-City 文件（文件名包含日期）
+          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("GeoLite2-City-.*\\.mmdb$")) | .browser_download_url' | head -n 1)
+          CITY_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("GeoLite2-City-.*\\.mmdb$")) | .name' | head -n 1)
+
+          if [ -n "$CITY_URL" ] && [ "$CITY_URL" != "null" ]; then
+            echo "Downloading $CITY_NAME from $CITY_URL"
             curl -L -o GeoLite2-City.mmdb "$CITY_URL"
+            echo "Downloaded successfully"
           else
-            echo "GeoLite2-City.mmdb not found in latest release"
+            echo "GeoLite2-City database not found in release"
+            echo "Available assets:"
+            echo "$LATEST_RELEASE" | jq -r '.assets[].name'
             exit 1
           fi
 
