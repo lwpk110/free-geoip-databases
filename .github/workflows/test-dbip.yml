@@ -1,4 +1,4 @@
-name: Test GeoLite2 Database
+name: Test DB-IP Database
 
 on:
   # 在 Release 创建后运行测试
@@ -21,37 +21,31 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: Download latest database from release
+      - name: Download latest DB-IP database from release
         run: |
-          echo "Searching for GeoLite2 database..."
+          echo "Searching for DB-IP database..."
 
           # 首先检查是否是由 release 触发的
           if [ "${{ github.event_name }}" == "release" ]; then
             echo "Triggered by release event"
             RELEASE_TAG="${{ github.event.release.tag_name }}"
 
-            # 检查是否是 GeoLite2 release
-            if [[ "$RELEASE_TAG" == geolite2-* ]] || [[ "$RELEASE_TAG" =~ ^[0-9]{8}$ ]]; then
-              echo "This is a GeoLite2 release: $RELEASE_TAG"
+            # 检查是否是 DB-IP release
+            if [[ "$RELEASE_TAG" == dbip-* ]]; then
+              echo "This is a DB-IP release: $RELEASE_TAG"
               LATEST_RELEASE='${{ toJson(github.event.release) }}'
             else
-              echo "This is not a GeoLite2 release (tag: $RELEASE_TAG), skipping test"
+              echo "This is not a DB-IP release (tag: $RELEASE_TAG), skipping test"
               exit 0
             fi
           else
-            echo "Manual trigger, searching for latest GeoLite2 release..."
-            # 查找最新的 GeoLite2 release (新格式)
-            LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '[.[] | select(.tag_name | startswith("geolite2-"))] | first')
-
-            # 如果没找到，尝试旧格式（纯日期）
-            if [ "$LATEST_RELEASE" == "null" ] || [ -z "$LATEST_RELEASE" ]; then
-              echo "No new format release found, trying legacy format..."
-              LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '[.[] | select(.tag_name | test("^[0-9]{8}$"))] | first')
-            fi
+            echo "Manual trigger, searching for latest DB-IP release..."
+            # 查找最新的 DB-IP release
+            LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '[.[] | select(.tag_name | startswith("dbip-"))] | first')
 
             if [ "$LATEST_RELEASE" == "null" ] || [ -z "$LATEST_RELEASE" ]; then
-              echo "⚠️ No GeoLite2 release found in repository"
-              echo "This is expected if GeoLite2 workflow hasn't run yet"
+              echo "⚠️ No DB-IP release found in repository"
+              echo "This is expected if DB-IP workflow hasn't run yet"
               echo "Skipping test..."
               exit 0
             fi
@@ -60,23 +54,17 @@ jobs:
           RELEASE_TAG=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
           echo "Using release: $RELEASE_TAG"
 
-          # 查找 GeoLite2-City 文件（支持带日期的新格式）
-          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("GeoLite2-City-.*\\.mmdb$")) | .browser_download_url' | head -n 1)
-          CITY_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("GeoLite2-City-.*\\.mmdb$")) | .name' | head -n 1)
-
-          # 如果没找到，尝试旧的固定文件名
-          if [ -z "$CITY_URL" ] || [ "$CITY_URL" == "null" ]; then
-            echo "Trying legacy filename format..."
-            CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "GeoLite2-City.mmdb") | .browser_download_url')
-            CITY_NAME="GeoLite2-City.mmdb"
-          fi
+          # 查找 DB-IP City Lite 文件
+          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("dbip-city-lite-.*\\.mmdb$")) | .browser_download_url' | head -n 1)
+          CITY_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("dbip-city-lite-.*\\.mmdb$")) | .name' | head -n 1)
 
           if [ -n "$CITY_URL" ] && [ "$CITY_URL" != "null" ]; then
             echo "Downloading $CITY_NAME from $CITY_URL"
+            # 下载后重命名为标准格式，以便测试程序使用
             curl -L -o GeoLite2-City.mmdb "$CITY_URL"
-            echo "✓ Downloaded successfully"
+            echo "✓ Downloaded successfully (renamed to GeoLite2-City.mmdb for testing)"
           else
-            echo "❌ GeoLite2-City database not found in release"
+            echo "❌ DB-IP City database not found in release"
             echo "Available assets:"
             echo "$LATEST_RELEASE" | jq -r '.assets[].name'
             exit 1
@@ -87,7 +75,7 @@ jobs:
 
       - name: Run tests
         run: |
-          echo "Running GeoLite2 database tests..."
+          echo "Running DB-IP database tests..."
 
           # 检查是否存在测试文件
           if [ -f "examples/test/test_cities.go" ]; then
@@ -106,7 +94,7 @@ jobs:
           fi
 
           echo ""
-          echo "✓ GeoLite2 database test completed successfully"
+          echo "✓ DB-IP database test completed successfully"
 
       - name: Verify database integrity
         run: |
@@ -127,10 +115,10 @@ jobs:
         if: success()
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✓ GeoLite2 Database Test Summary"
+          echo "✓ DB-IP Database Test Summary"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "Status: PASSED ✓"
-          echo "Database: GeoLite2 City"
+          echo "Database: DB-IP City Lite"
           echo "Test Date: $(date +'%Y-%m-%d %H:%M:%S UTC')"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -138,12 +126,11 @@ jobs:
         if: failure()
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "⚠️ GeoLite2 Database Test Failed"
+          echo "⚠️ DB-IP Database Test Failed"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "Please check the logs above for details"
           echo "Common issues:"
           echo "  - Database file not found in release"
-          echo "  - MaxMind License Key issues"
           echo "  - Network connection problems"
           echo "  - Database format issues"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
