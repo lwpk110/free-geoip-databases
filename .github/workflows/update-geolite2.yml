@@ -71,21 +71,37 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
+      - name: Rename files with date
+        run: |
+          DATE=$(date +'%Y%m%d')
+          mv GeoLite2-City.mmdb GeoLite2-City-${DATE}.mmdb
+          mv GeoLite2-Country.mmdb GeoLite2-Country-${DATE}.mmdb
+          mv GeoLite2-ASN.mmdb GeoLite2-ASN-${DATE}.mmdb
+
       - name: Check if databases were downloaded
         id: check
         run: |
-          if [ -f "GeoLite2-City.mmdb" ] && [ -f "GeoLite2-Country.mmdb" ] && [ -f "GeoLite2-ASN.mmdb" ]; then
+          DATE=$(date +'%Y%m%d')
+          CITY_FILE="GeoLite2-City-${DATE}.mmdb"
+          COUNTRY_FILE="GeoLite2-Country-${DATE}.mmdb"
+          ASN_FILE="GeoLite2-ASN-${DATE}.mmdb"
+
+          if [ -f "$CITY_FILE" ] && [ -f "$COUNTRY_FILE" ] && [ -f "$ASN_FILE" ]; then
             echo "Database files found"
             echo "success=true" >> $GITHUB_OUTPUT
 
             # 获取文件大小
-            CITY_SIZE=$(du -h GeoLite2-City.mmdb | cut -f1)
-            COUNTRY_SIZE=$(du -h GeoLite2-Country.mmdb | cut -f1)
-            ASN_SIZE=$(du -h GeoLite2-ASN.mmdb | cut -f1)
+            CITY_SIZE=$(du -h "$CITY_FILE" | cut -f1)
+            COUNTRY_SIZE=$(du -h "$COUNTRY_FILE" | cut -f1)
+            ASN_SIZE=$(du -h "$ASN_FILE" | cut -f1)
 
             echo "city_size=${CITY_SIZE}" >> $GITHUB_OUTPUT
             echo "country_size=${COUNTRY_SIZE}" >> $GITHUB_OUTPUT
             echo "asn_size=${ASN_SIZE}" >> $GITHUB_OUTPUT
+
+            echo "city_file=${CITY_FILE}" >> $GITHUB_OUTPUT
+            echo "country_file=${COUNTRY_FILE}" >> $GITHUB_OUTPUT
+            echo "asn_file=${ASN_FILE}" >> $GITHUB_OUTPUT
           else
             echo "Database files not found"
             echo "success=false" >> $GITHUB_OUTPUT
@@ -96,7 +112,7 @@ jobs:
         if: steps.check.outputs.success == 'true'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.date.outputs.date }}
+          tag_name: geolite2-${{ steps.date.outputs.date }}
           name: GeoLite2 Database - ${{ steps.date.outputs.date }}
           body: |
             ## GeoLite2 数据库更新
@@ -105,9 +121,9 @@ jobs:
 
             ### 📦 包含文件
 
-            - **GeoLite2-City.mmdb** (${{ steps.check.outputs.city_size }}) - 城市级别 IP 地理位置数据库
-            - **GeoLite2-Country.mmdb** (${{ steps.check.outputs.country_size }}) - 国家级别 IP 地理位置数据库
-            - **GeoLite2-ASN.mmdb** (${{ steps.check.outputs.asn_size }}) - ASN 数据库
+            - **${{ steps.check.outputs.city_file }}** (${{ steps.check.outputs.city_size }}) - 城市级别 IP 地理位置数据库
+            - **${{ steps.check.outputs.country_file }}** (${{ steps.check.outputs.country_size }}) - 国家级别 IP 地理位置数据库
+            - **${{ steps.check.outputs.asn_file }}** (${{ steps.check.outputs.asn_size }}) - ASN 数据库
 
             ### 📝 使用说明
 
@@ -129,9 +145,9 @@ jobs:
 
             *此 Release 由 GitHub Actions 自动生成*
           files: |
-            GeoLite2-City.mmdb
-            GeoLite2-Country.mmdb
-            GeoLite2-ASN.mmdb
+            ${{ steps.check.outputs.city_file }}
+            ${{ steps.check.outputs.country_file }}
+            ${{ steps.check.outputs.asn_file }}
           draft: false
           prerelease: false
         env:

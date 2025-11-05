@@ -23,48 +23,50 @@
 
 访问 [**Releases 页面**](../../releases/latest) 下载最新数据库文件：
 
-| 数据库 | 说明 | 文件大小 | 授权 | 下载链接 |
+| 数据库 | 说明 | 文件大小 | 授权 | 获取方式 |
 |--------|------|---------|------|----------|
-| **GeoLite2-City** | 城市级别地理位置数据 | ~70 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-City.mmdb) |
-| **GeoLite2-Country** | 国家级别地理位置数据 | ~6 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-Country.mmdb) |
-| **GeoLite2-ASN** | ASN 网络运营商数据 | ~8 MB | GeoLite2 EULA | [下载](../../releases/latest/download/GeoLite2-ASN.mmdb) |
+| **GeoLite2-City** | 城市级别地理位置数据 | ~70 MB | GeoLite2 EULA | [Releases 页面](../../releases?q=geolite2) |
+| **GeoLite2-Country** | 国家级别地理位置数据 | ~6 MB | GeoLite2 EULA | [Releases 页面](../../releases?q=geolite2) |
+| **GeoLite2-ASN** | ASN 网络运营商数据 | ~8 MB | GeoLite2 EULA | [Releases 页面](../../releases?q=geolite2) |
+
+> **注意**: GeoLite2 数据库文件名包含日期信息（如 `GeoLite2-City-20251105.mmdb`），请访问 Releases 页面选择最新版本下载。
 
 ### DB-IP 数据库
 
 查看 [**DB-IP Releases**](../../releases?q=dbip&expanded=true) 下载 DB-IP 数据库：
 
-| 数据库 | 说明 | 文件大小 | 授权 | 下载链接 |
+| 数据库 | 说明 | 文件大小 | 授权 | 获取方式 |
 |--------|------|---------|------|----------|
-| **DB-IP City Lite** | 城市级别地理位置数据 | ~130 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
-| **DB-IP Country Lite** | 国家级别地理位置数据 | ~7 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
-| **DB-IP ASN Lite** | ASN 网络运营商数据 | ~9 MB | CC BY 4.0 | [查看 Releases](../../releases?q=dbip) |
+| **DB-IP City Lite** | 城市级别地理位置数据 | ~130 MB | CC BY 4.0 | [Releases 页面](../../releases?q=dbip) |
+| **DB-IP Country Lite** | 国家级别地理位置数据 | ~7 MB | CC BY 4.0 | [Releases 页面](../../releases?q=dbip) |
+| **DB-IP ASN Lite** | ASN 网络运营商数据 | ~9 MB | CC BY 4.0 | [Releases 页面](../../releases?q=dbip) |
 
-> **注意**: DB-IP 数据库文件名包含年月信息，如 `dbip-city-lite-2024-11.mmdb`
+> **注意**: DB-IP 数据库文件名包含年月信息（如 `dbip-city-lite-2025-11.mmdb`），请访问 Releases 页面选择最新版本下载。
 
 ### 命令行下载
 
-```bash
-# 下载 City 数据库
-curl -L -o GeoLite2-City.mmdb \
-  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-City.mmdb
+由于文件名包含日期信息，建议通过以下方式获取最新数据库：
 
-# 下载 Country 数据库
-curl -L -o GeoLite2-Country.mmdb \
-  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-Country.mmdb
-
-# 下载 ASN 数据库
-curl -L -o GeoLite2-ASN.mmdb \
-  https://github.com/lwpk110/free-geoip-databases/releases/latest/download/GeoLite2-ASN.mmdb
-```
-
-或使用项目提供的下载脚本：
+**方法一：使用项目提供的下载脚本**
 
 ```bash
-# MaxMind GeoLite2
+# MaxMind GeoLite2（需要 License Key）
 ./scripts/download_geolite2.sh <YOUR_LICENSE_KEY>
 
-# DB-IP (无需 License Key)
+# DB-IP（无需 License Key）
 ./scripts/download_dbip.sh all
+```
+
+**方法二：从 GitHub Releases 下载**
+
+```bash
+# 访问 Releases 页面选择最新版本
+# GeoLite2: https://github.com/lwpk110/free-geoip-databases/releases?q=geolite2
+# DB-IP: https://github.com/lwpk110/free-geoip-databases/releases?q=dbip
+
+# 或使用 GitHub CLI
+gh release list --repo lwpk110/free-geoip-databases
+gh release download <tag-name> --repo lwpk110/free-geoip-databases
 ```
 
 ## 🚀 使用示例
