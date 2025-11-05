@@ -1,10 +1,24 @@
 # Free GeoIP Databases - Auto-Updated 🌍
 
-[![Update GeoLite2 Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml)
-[![Update DB-IP Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml)
-[![Test GeoLite2 Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml)
-[![Test DB-IP Database](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml)
+<div align="center">
+
+### 📦 Database Updates
+
+[![GeoLite2](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml)
+[![DB-IP](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml)
+
+### 🧪 Quality Checks
+
+[![GeoLite2 Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml)
+[![DB-IP Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml)
+
+---
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/lwpk110/free-geoip-databases?style=flat-square)](https://github.com/lwpk110/free-geoip-databases/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/lwpk110/free-geoip-databases?style=flat-square)](https://github.com/lwpk110/free-geoip-databases/network/members)
+
+</div>
 
 > **免费、自动更新的 GeoIP 数据库集合** - 提供 MaxMind GeoLite2、DB-IP 等数据库的自动化下载和发布服务
 
