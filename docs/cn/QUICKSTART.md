@@ -1,6 +1,6 @@
 # 快速开始指南
 
-**[ 中文 | [English](QUICKSTART_EN.md) ]**
+[ 中文 | [English](../en/QUICKSTART.md) ]
 
 本指南将帮助你快速设置和运行 GeoIP 查询工具，并配置自动更新功能。
 
@@ -22,7 +22,7 @@ cd geoip
 
 ### 步骤 2: 获取数据库
 
-**选项 A: 从 Release 下载（推荐）**
+#### 选项 A：从 Release 下载（推荐）
 
 ```bash
 # 如果仓库已经有 Release，直接下载
@@ -30,9 +30,9 @@ curl -L -o GeoLite2-City.mmdb \
   https://github.com/YOUR_USERNAME/geoip/releases/latest/download/GeoLite2-City.mmdb
 ```
 
-**选项 B: 手动下载**
+#### 选项 B：手动下载
 
-1. 访问 https://www.maxmind.com/en/geolite2/signup 注册账号
+1. 访问 [MaxMind 注册](https://www.maxmind.com/en/geolite2/signup) 注册账号
 2. 生成 License Key
 3. 运行下载脚本：
 
@@ -53,7 +53,7 @@ go run main.go
 
 你应该能看到类似这样的输出：
 
-```
+```text
 === 开始查询多个 IP 地址的地理位置 ===
 
 查询 IP: 8.8.8.8
@@ -77,9 +77,9 @@ go run main.go
 
 ### 步骤 2: 获取 MaxMind License Key
 
-1. 访问 https://www.maxmind.com/en/geolite2/signup
+1. 访问 [https://www.maxmind.com/en/geolite2/signup](https://www.maxmind.com/en/geolite2/signup)
 2. 注册并验证邮箱
-3. 登录后访问 https://www.maxmind.com/en/accounts/current/license-key
+3. 登录后访问 [https://www.maxmind.com/en/accounts/current/license-key](https://www.maxmind.com/en/accounts/current/license-key)
 4. 点击 "Generate new license key"
 5. 复制生成的 License Key
 
@@ -114,6 +114,7 @@ go run main.go
 ## 📅 自动更新说明
 
 配置完成后：
+
 - 工作流会在每周二和周五 UTC 10:00（北京时间 18:00）自动运行
 - 每次更新会创建新的 Release
 - Release 包含三个数据库文件：

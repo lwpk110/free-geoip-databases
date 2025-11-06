@@ -2,12 +2,16 @@
 
 <div align="center">
 
-### 📦 Database Updates
+**[ 中文 | [English](README_EN.md) ]**
+
+**📚 文档 Documentation: [中文](docs/cn/) | [English](docs/en/)**
+
+## 📦 Database Updates
 
 [![GeoLite2](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-geolite2.yml)
 [![DB-IP](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/update-dbip.yml)
 
-### 🧪 Quality Checks
+## 🧪 Quality Checks
 
 [![GeoLite2 Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml)
 [![DB-IP Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml)
@@ -29,7 +33,7 @@
 - ✅ **完全免费** - 无需注册，无需 License Key（DB-IP 版本）
 - 🤖 **自动更新** - GeoLite2 每周更新（周二、周五），DB-IP 每月更新（1号、15号）
 - 📦 **开箱即用** - 直接下载 `.mmdb` 文件即可使用
--  **多种数据库** - 提供 City、Country、ASN 等多种数据库
+- **多种数据库** - 提供 City、Country、ASN 等多种数据库
 - 🌐 **多种来源** - 同时提供 MaxMind GeoLite2 和 DB-IP 数据库
 - ✅ **质量保证** - 自动化测试确保数据库完整性
 
@@ -158,11 +162,13 @@ maxmind.open('GeoLite2-City.mmdb').then(lookup => {
 ## 🔄 更新频率
 
 ### MaxMind GeoLite2
+
 - **自动更新**: 每周二和周五（UTC 10:00 / 北京时间 18:00）
 - **数据源**: MaxMind 官方 GeoLite2 数据库
 - **更新策略**: 跟随 MaxMind 官方更新周期
 
 ### DB-IP
+
 - **自动更新**: 每月1号和15号（UTC 10:00 / 北京时间 18:00）
 - **数据源**: DB-IP 官方免费数据库
 - **更新策略**: 下载当月最新版本
@@ -195,7 +201,7 @@ maxmind.open('GeoLite2-City.mmdb').then(lookup => {
 
 ### 项目结构
 
-```
+```text
 free-geoip-databases/
 ├── .github/workflows/    # GitHub Actions 自动化工作流
 │   ├── update-geolite2.yml
@@ -242,7 +248,7 @@ cd ../test
 go run test_cities.go
 ```
 
-更多详情请查看 [examples/README.md](examples/README.md) 和 [docs/TESTING.md](docs/TESTING.md)。
+更多详情请查看 [examples/README.md](examples/README.md) 和 [docs/cn/TESTING.md](docs/cn/TESTING.md)。
 
 ## ⚙️ Fork 本项目实现自动更新
 

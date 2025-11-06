@@ -1,6 +1,6 @@
 # 测试说明
 
-**[ 中文 | [English](TESTING_EN.md) ]**
+[ 中文 | [English](../en/TESTING.md) ]
 
 ## 本地测试
 
@@ -70,11 +70,11 @@ go run test_cities.go
 
 ```go
 var testIPs = []struct {
-	ip          string
-	description string
+    ip          string
+    description string
 }{
-	{"your.ip.address.here", "Your Description"},
-	// ... 更多测试 IP
+    {"your.ip.address.here", "Your Description"},
+    // ... 更多测试 IP
 }
 ```
 
@@ -82,7 +82,7 @@ var testIPs = []struct {
 
 成功的测试输出示例：
 
-```
+```text
 ========================================
 GeoIP 数据库测试
 ========================================
@@ -104,7 +104,7 @@ GeoIP 数据库测试
 
 ### 数据库文件未找到
 
-```
+```text
 ❌ 无法打开数据库: open GeoLite2-City.mmdb: no such file or directory
 ```
 
@@ -117,6 +117,7 @@ GeoIP 数据库测试
 ### GitHub Actions 失败
 
 检查以下几点：
+
 1. 是否有有效的 Release（包含 `GeoLite2-City.mmdb` 文件）
 2. `GEOIP_ACCESS_TOKEN` 是否正确配置
 3. 网络连接是否正常
