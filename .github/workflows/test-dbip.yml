@@ -33,7 +33,8 @@ jobs:
             # 检查是否是 DB-IP release
             if [[ "$RELEASE_TAG" == dbip-* ]]; then
               echo "This is a DB-IP release: $RELEASE_TAG"
-              LATEST_RELEASE='${{ toJson(github.event.release) }}'
+              # 直接从 API 获取 release 信息
+              LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG)
             else
               echo "This is not a DB-IP release (tag: $RELEASE_TAG), skipping test"
               exit 0
@@ -54,19 +55,30 @@ jobs:
           RELEASE_TAG=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
           echo "Using release: $RELEASE_TAG"
 
-          # 查找 DB-IP City Lite 文件
-          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("dbip-city-lite-.*\\.mmdb$")) | .browser_download_url' | head -n 1)
-          CITY_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | test("dbip-city-lite-.*\\.mmdb$")) | .name' | head -n 1)
+          # 显示可用的资源文件（用于调试）
+          echo "Available assets in release:"
+          echo "$LATEST_RELEASE" | jq -r '.assets[].name'
+          echo ""
+
+          # 查找 DB-IP City Lite 文件（支持 dbip-city-lite-YYYY-MM.mmdb 格式）
+          CITY_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | startswith("dbip-city-lite")) | .browser_download_url' | head -n 1)
+          CITY_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | startswith("dbip-city-lite")) | .name' | head -n 1)
 
           if [ -n "$CITY_URL" ] && [ "$CITY_URL" != "null" ]; then
-            echo "Downloading $CITY_NAME from $CITY_URL"
+            echo "Found database: $CITY_NAME"
+            echo "Downloading from: $CITY_URL"
             # 下载后重命名为标准格式，以便测试程序使用
             curl -L -o GeoLite2-City.mmdb "$CITY_URL"
-            echo "✓ Downloaded successfully (renamed to GeoLite2-City.mmdb for testing)"
+
+            if [ -f "GeoLite2-City.mmdb" ]; then
+              echo "✓ Downloaded successfully (renamed to GeoLite2-City.mmdb for testing)"
+            else
+              echo "❌ Download failed"
+              exit 1
+            fi
           else
             echo "❌ DB-IP City database not found in release"
-            echo "Available assets:"
-            echo "$LATEST_RELEASE" | jq -r '.assets[].name'
+            echo "Please check if the release contains the database file"
             exit 1
           fi
 
