@@ -13,7 +13,7 @@
 
 ## 🧪 Quality Checks
 
-[![GeoLite2 Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-database.yml)
+[![GeoLite2 Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-geolite.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-geolite.yml)
 [![DB-IP Tests](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml/badge.svg)](https://github.com/lwpk110/free-geoip-databases/actions/workflows/test-dbip.yml)
 
 ---
