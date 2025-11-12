@@ -24,8 +24,11 @@ examples/
 # 进入示例目录
 cd examples/query
 
-# 运行示例（需要在根目录有 GeoLite2-City.mmdb 文件）
+# 运行示例（默认使用根目录的 GeoLite2-City.mmdb 文件）
 go run main.go
+
+# 或者指定其他数据库文件（支持 GeoLite2 和 DB-IP）
+GEOIP_DB_PATH="../../dbip-city-lite-2025-11.mmdb" go run main.go
 ```
 
 **功能**:
@@ -33,6 +36,7 @@ go run main.go
 - 自动获取当前主机的公网 IP
 - 显示完整的地理位置信息（大陆、国家、省份、城市、经纬度等）
 - 同时输出 JSON 格式数据
+- **支持 GeoLite2 和 DB-IP 数据库**（通过 `GEOIP_DB_PATH` 环境变量指定）
 
 ### 2. 测试程序 (test)
 
@@ -42,8 +46,11 @@ go run main.go
 # 进入测试目录
 cd examples/test
 
-# 运行测试（需要在根目录有 GeoLite2-City.mmdb 文件）
+# 运行测试（默认使用根目录的 GeoLite2-City.mmdb 文件）
 go run test_cities.go
+
+# 或者指定其他数据库文件（支持 GeoLite2 和 DB-IP）
+GEOIP_DB_PATH="../../dbip-city-lite-2025-11.mmdb" go run test_cities.go
 ```
 
 **功能**:

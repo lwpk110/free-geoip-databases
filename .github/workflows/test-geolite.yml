@@ -73,10 +73,13 @@ jobs:
           if [ -n "$CITY_URL" ] && [ "$CITY_URL" != "null" ]; then
             echo "Found database: $CITY_NAME"
             echo "Downloading from: $CITY_URL"
+            # 下载后重命名为固定文件名 GeoLite2-City.mmdb，便于测试程序使用
+            # 测试程序默认使用此文件名，也可通过 GEOIP_DB_PATH 环境变量指定其他路径
             curl -L -o GeoLite2-City.mmdb "$CITY_URL"
 
             if [ -f "GeoLite2-City.mmdb" ]; then
               echo "✓ Downloaded successfully"
+              echo "Original filename: $CITY_NAME"
             else
               echo "❌ Download failed"
               exit 1
@@ -93,16 +96,20 @@ jobs:
       - name: Run tests
         run: |
           echo "Running GeoLite2 database tests..."
+          echo "Database: GeoLite2-City.mmdb"
+          echo ""
 
           # 检查是否存在测试文件
           if [ -f "examples/test/test_cities.go" ]; then
             echo "Running examples/test/test_cities.go..."
             cd examples/test
+            # 使用默认的 GeoLite2-City.mmdb 文件名
             go run test_cities.go
             cd ../..
           elif [ -f "examples/query/main.go" ]; then
             echo "Running examples/query/main.go..."
             cd examples/query
+            # 使用默认的 GeoLite2-City.mmdb 文件名
             go run main.go
             cd ../..
           else

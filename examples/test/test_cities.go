@@ -25,16 +25,26 @@ var testIPs = []struct {
 }
 
 func main() {
-	// 打开数据库 (相对于项目根目录)
-	db, err := geoip2.Open("../../GeoLite2-City.mmdb")
+	// 支持通过环境变量指定数据库文件路径
+	// 默认使用 GeoLite2-City.mmdb (相对于项目根目录)
+	dbPath := os.Getenv("GEOIP_DB_PATH")
+	if dbPath == "" {
+		dbPath = "../../GeoLite2-City.mmdb"
+	}
+
+	// 打开数据库
+	db, err := geoip2.Open(dbPath)
 	if err != nil {
-		log.Fatalf("❌ 无法打开数据库: %v", err)
+		log.Fatalf("❌ 无法打开数据库 %s: %v", dbPath, err)
 	}
 	defer db.Close()
 
+	// 显示正在使用的数据库
 	fmt.Println("========================================")
 	fmt.Println("GeoIP 数据库测试")
-	fmt.Println("========================================\n")
+	fmt.Printf("数据库文件: %s\n", dbPath)
+	fmt.Println("========================================")
+	fmt.Println()
 
 	successCount := 0
 	failCount := 0

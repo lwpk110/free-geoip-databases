@@ -67,11 +67,14 @@ jobs:
           if [ -n "$CITY_URL" ] && [ "$CITY_URL" != "null" ]; then
             echo "Found database: $CITY_NAME"
             echo "Downloading from: $CITY_URL"
-            # 下载后重命名为标准格式，以便测试程序使用
-            curl -L -o GeoLite2-City.mmdb "$CITY_URL"
+            # 下载 DB-IP 数据库文件
+            # 注意: DB-IP 数据库与 MaxMind GeoIP2 格式兼容，可以使用相同的读取库
+            curl -L -o "$CITY_NAME" "$CITY_URL"
 
-            if [ -f "GeoLite2-City.mmdb" ]; then
-              echo "✓ Downloaded successfully (renamed to GeoLite2-City.mmdb for testing)"
+            if [ -f "$CITY_NAME" ]; then
+              echo "✓ Downloaded successfully: $CITY_NAME"
+              # 保存文件名到文件，供后续步骤使用
+              echo "$CITY_NAME" > db_filename.txt
             else
               echo "❌ Download failed"
               exit 1
@@ -89,16 +92,23 @@ jobs:
         run: |
           echo "Running DB-IP database tests..."
 
+          # 读取数据库文件名
+          DB_FILE=$(cat db_filename.txt)
+          echo "Database file: $DB_FILE"
+          echo ""
+
           # 检查是否存在测试文件
           if [ -f "examples/test/test_cities.go" ]; then
             echo "Running examples/test/test_cities.go..."
             cd examples/test
-            go run test_cities.go
+            # 通过环境变量传递数据库路径（DB-IP 数据库格式兼容 GeoIP2）
+            GEOIP_DB_PATH="../../$DB_FILE" go run test_cities.go
             cd ../..
           elif [ -f "examples/query/main.go" ]; then
             echo "Running examples/query/main.go..."
             cd examples/query
-            go run main.go
+            # 通过环境变量传递数据库路径（DB-IP 数据库格式兼容 GeoIP2）
+            GEOIP_DB_PATH="../../$DB_FILE" go run main.go
             cd ../..
           else
             echo "No test files found"
@@ -110,16 +120,19 @@ jobs:
 
       - name: Verify database integrity
         run: |
-          if [ -f "GeoLite2-City.mmdb" ]; then
-            FILE_SIZE=$(du -h GeoLite2-City.mmdb | cut -f1)
+          # 读取数据库文件名
+          DB_FILE=$(cat db_filename.txt)
+
+          if [ -f "$DB_FILE" ]; then
+            FILE_SIZE=$(du -h "$DB_FILE" | cut -f1)
             echo "✓ Database verified (Size: $FILE_SIZE)"
 
             # 显示文件信息
             echo ""
             echo "Database file details:"
-            ls -lh GeoLite2-City.mmdb
+            ls -lh "$DB_FILE"
           else
-            echo "✗ Database file not found"
+            echo "✗ Database file not found: $DB_FILE"
             exit 1
           fi
 

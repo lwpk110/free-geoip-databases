@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/oschwald/geoip2-golang"
@@ -123,12 +124,21 @@ func printAllFields(ipStr string, record *geoip2.City) {
 }
 
 func main() {
-	// 打开数据库 (相对于项目根目录)
-	db, err := geoip2.Open("../../GeoLite2-City.mmdb")
+	// 支持通过环境变量指定数据库文件路径
+	// 默认使用 GeoLite2-City.mmdb (相对于项目根目录)
+	dbPath := os.Getenv("GEOIP_DB_PATH")
+	if dbPath == "" {
+		dbPath = "../../GeoLite2-City.mmdb"
+	}
+
+	// 打开数据库
+	db, err := geoip2.Open(dbPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("无法打开数据库 %s: %v", dbPath, err)
 	}
 	defer db.Close()
+
+	fmt.Printf("使用数据库: %s\n\n", dbPath)
 
 	// 获取当前主机的外网 IP
 	fmt.Println("正在获取当前主机外网 IP...")

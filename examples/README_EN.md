@@ -22,8 +22,11 @@ Query detailed geolocation information for IP addresses.
 # Enter example directory
 cd examples/query
 
-# Run example (requires GeoLite2-City.mmdb file in root directory)
+# Run example (default uses GeoLite2-City.mmdb file in root directory)
 go run main.go
+
+# Or specify another database file (supports both GeoLite2 and DB-IP)
+GEOIP_DB_PATH="../../dbip-city-lite-2025-11.mmdb" go run main.go
 ```
 
 **Features**:
@@ -31,6 +34,7 @@ go run main.go
 - Automatically get current host's public IP
 - Display complete geolocation information (continent, country, province, city, coordinates, etc.)
 - Output JSON format data
+- **Supports both GeoLite2 and DB-IP databases** (specify via `GEOIP_DB_PATH` environment variable)
 
 ### 2. Test Program (test)
 
@@ -40,8 +44,11 @@ Test if the database is working properly.
 # Enter test directory
 cd examples/test
 
-# Run tests (requires GeoLite2-City.mmdb file in root directory)
+# Run tests (default uses GeoLite2-City.mmdb file in root directory)
 go run test_cities.go
+
+# Or specify another database file (supports both GeoLite2 and DB-IP)
+GEOIP_DB_PATH="../../dbip-city-lite-2025-11.mmdb" go run test_cities.go
 ```
 
 **Features**:
