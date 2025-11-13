@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoIP 查询服务 - Self-Hosted GeoIP API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-box button:active {
+            transform: translateY(0);
+        }
+
+        .quick-ips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .quick-ip {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .quick-ip:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .result-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .ip-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item p {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .map-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .map-link:hover {
+            background: #45a049;
+        }
+
+        .error {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .json-view {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 GeoIP 查询服务</h1>
+            <p>基于 MaxMind GeoLite2 / DB-IP 的自托管 IP 地理位置查询服务</p>
+        </div>
+
+        <div class="card">
+            <div class="search-box">
+                <input type="text" id="ipInput" placeholder="输入 IP 地址，例如：8.8.8.8" />
+                <button onclick="lookupIP()">🔍 查询</button>
+            </div>
+
+            <div class="quick-ips">
+                <div class="quick-ip" onclick="quickLookup('8.8.8.8')">🇺🇸 8.8.8.8 (Google)</div>
+                <div class="quick-ip" onclick="quickLookup('1.1.1.1')">🇺🇸 1.1.1.1 (Cloudflare)</div>
+                <div class="quick-ip" onclick="quickLookup('114.114.114.114')">🇨🇳 114.114.114.114</div>
+                <div class="quick-ip" onclick="quickLookup('223.5.5.5')">🇨🇳 223.5.5.5 (阿里)</div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">查询中...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="result" id="result">
+                <div class="result-header">
+                    <h2>查询结果</h2>
+                    <div class="ip-badge" id="ipBadge"></div>
+                </div>
+
+                <div class="info-grid" id="infoGrid"></div>
+
+                <div id="mapLink"></div>
+
+                <details style="margin-top: 20px;">
+                    <summary style="cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        查看完整 JSON 数据
+                    </summary>
+                    <div class="json-view" id="jsonView"></div>
+                </details>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">📊 系统状态</h3>
+            <div class="status-bar" id="statusBar">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>服务正常运行</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                基于 <a href="https://github.com/lwpk110/free-geoip-databases" target="_blank">Free GeoIP Databases</a> 项目
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                数据来源: MaxMind GeoLite2 / DB-IP Lite
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function lookupIP() {
+            const ipInput = document.getElementById('ipInput');
+            const ip = ipInput.value.trim();
+
+            if (!ip) {
+                showError('请输入 IP 地址');
+                return;
+            }
+
+            hideError();
+            hideResult();
+            showLoading();
+
+            try {
+                const response = await fetch(`/api/v1/lookup/${encodeURIComponent(ip)}`);
+                const data = await response.json();
+
+                hideLoading();
+
+                if (!response.ok) {
+                    showError(data.error || '查询失败');
+                    return;
+                }
+
+                displayResult(data);
+            } catch (error) {
+                hideLoading();
+                showError('网络错误：' + error.message);
+            }
+        }
+
+        function quickLookup(ip) {
+            document.getElementById('ipInput').value = ip;
+            lookupIP();
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            const ipBadge = document.getElementById('ipBadge');
+            const infoGrid = document.getElementById('infoGrid');
+            const mapLink = document.getElementById('mapLink');
+            const jsonView = document.getElementById('jsonView');
+
+            ipBadge.textContent = data.ip;
+
+            // Build info grid
+            let html = '';
+
+            // Country
+            const countryName = data.country.names['zh-CN'] || data.country.names['en'] || 'N/A';
+            html += `
+                <div class="info-item">
+                    <h3>🌏 国家</h3>
+                    <p>${countryName} (${data.country.iso_code || 'N/A'})</p>
+                </div>
+            `;
+
+            // City
+            const cityName = data.city.names && (data.city.names['zh-CN'] || data.city.names['en']) || 'N/A';
+            html += `
+                <div class="info-item">
+                    <h3>🏙️ 城市</h3>
+                    <p>${cityName}</p>
+                </div>
+            `;
+
+            // Continent
+            const continentName = data.continent.names['zh-CN'] || data.continent.names['en'] || 'N/A';
+            html += `
+                <div class="info-item">
+                    <h3>🌍 大洲</h3>
+                    <p>${continentName}</p>
+                </div>
+            `;
+
+            // Coordinates
+            html += `
+                <div class="info-item">
+                    <h3>📍 经纬度</h3>
+                    <p>${data.location.latitude.toFixed(4)}, ${data.location.longitude.toFixed(4)}</p>
+                </div>
+            `;
+
+            // Timezone
+            if (data.location.time_zone) {
+                html += `
+                    <div class="info-item">
+                        <h3>🕐 时区</h3>
+                        <p>${data.location.time_zone}</p>
+                    </div>
+                `;
+            }
+
+            // Postal Code
+            if (data.postal && data.postal.code) {
+                html += `
+                    <div class="info-item">
+                        <h3>📮 邮编</h3>
+                        <p>${data.postal.code}</p>
+                    </div>
+                `;
+            }
+
+            // Subdivisions
+            if (data.subdivisions && data.subdivisions.length > 0) {
+                const subName = data.subdivisions[0].names['zh-CN'] || data.subdivisions[0].names['en'] || 'N/A';
+                html += `
+                    <div class="info-item">
+                        <h3>📍 省/州</h3>
+                        <p>${subName}</p>
+                    </div>
+                `;
+            }
+
+            // Accuracy
+            if (data.location.accuracy_radius) {
+                html += `
+                    <div class="info-item">
+                        <h3>🎯 精度半径</h3>
+                        <p>${data.location.accuracy_radius} km</p>
+                    </div>
+                `;
+            }
+
+            infoGrid.innerHTML = html;
+
+            // Map link
+            const lat = data.location.latitude;
+            const lon = data.location.longitude;
+            mapLink.innerHTML = `
+                <a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=12" 
+                   target="_blank" class="map-link">
+                    🗺️ 在地图上查看位置
+                </a>
+            `;
+
+            // JSON view
+            jsonView.textContent = JSON.stringify(data, null, 2);
+
+            resultDiv.classList.add('show');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.remove('show');
+        }
+
+        function hideResult() {
+            document.getElementById('result').classList.remove('show');
+        }
+
+        // Load status on page load
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/v1/status');
+                const data = await response.json();
+
+                const statusBar = document.getElementById('statusBar');
+                statusBar.innerHTML = `
+                    <div class="status-item">
+                        <div class="status-dot" style="background: ${data.status === 'healthy' ? '#4CAF50' : '#f44336'}"></div>
+                        <span>状态: ${data.status === 'healthy' ? '正常' : '异常'}</span>
+                    </div>
+                    <div class="status-item">
+                        <span>📁 数据库类型: ${data.database_type}</span>
+                    </div>
+                    <div class="status-item">
+                        <span>⏱️ 运行时间: ${data.uptime}</span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Failed to load status:', error);
+            }
+        }
+
+        // Enter key support
+        document.getElementById('ipInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                lookupIP();
+            }
+        });
+
+        // Load status on page load
+        loadStatus();
+    </script>
+</body>
+</html>
