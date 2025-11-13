@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  geoip-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GEOIP_DB_PATH=/data/GeoLite2-City.mmdb
+      - PORT=8080
+      - GIN_MODE=release
+    volumes:
+      # Mount your database file here
+      # Download it first using: ./scripts/download_dbip.sh all
+      - ./GeoLite2-City.mmdb:/data/GeoLite2-City.mmdb:ro
+      # Or use DB-IP database
+      # - ./dbip-city-lite-2025-11.mmdb:/data/GeoLite2-City.mmdb:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
