@@ -98,6 +98,7 @@ For YAML-based agents (like Senior Coding Engineer), each configuration includes
 To add a new agent to this project:
 
 1. Create a new `.md` or `.yml` file in this directory
+1. Create a new `.md` file in this directory
 2. Define the agent's role, responsibilities, and capabilities
 3. Provide clear examples of when and how to use the agent
 4. Update this README to document the new agent
