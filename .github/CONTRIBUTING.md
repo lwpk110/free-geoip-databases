@@ -7,7 +7,8 @@
 ```
 free-geoip-databases/
 ├── .github/
-│   └── workflows/        # GitHub Actions 自动化
+│   ├── agents/          # GitHub Copilot 智能助手配置
+│   └── workflows/       # GitHub Actions 自动化
 ├── scripts/              # 下载脚本
 ├── examples/             # 示例代码
 │   ├── query/           # 查询示例
@@ -97,6 +98,18 @@ cd examples/your-example
 ```
 
 记得在 `examples/README.md` 中添加说明。
+
+### 使用智能助手
+
+本项目配置了 GitHub Copilot 智能助手，可以帮助你更好地参与项目贡献：
+
+- **资深产品经理助手** (`.github/agents/senior-product-manager.md`)
+  - 帮助进行产品功能规划和迭代
+  - 提供用户体验优化建议
+  - 进行竞品分析和功能借鉴
+  - 提出创新性解决方案
+
+如果你有产品相关的想法或需求，可以咨询智能助手获取建议。
 
 ### 更新文档
 
