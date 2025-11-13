@@ -8,6 +8,10 @@ This directory contains custom agent configurations for GitHub Copilot.
 
 A highly experienced senior development engineer specializing in coding tasks.
 
+**Language Versions:**
+- English: `senior-coding-engineer.yml`
+- 中文: `senior-coding-engineer-zh.yml` (资深编码工程师)
+
 **Expertise:**
 - Primary Languages: Go, Python, JavaScript/TypeScript, Shell/Bash
 - Frameworks: GitHub Actions, Docker, Git, REST APIs
