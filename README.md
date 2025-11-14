@@ -36,6 +36,38 @@
 - **多种数据库** - 提供 City、Country、ASN 等多种数据库
 - 🌐 **多种来源** - 同时提供 MaxMind GeoLite2 和 DB-IP 数据库
 - ✅ **质量保证** - 自动化测试确保数据库完整性
+- 🚀 **自托管 API** - 提供开箱即用的 GeoIP 查询 API 服务和 Web 界面
+
+## 🆕 新功能：自托管 GeoIP API 服务
+
+本项目现在提供了基于 Golang 实现的 GeoIP 查询 API 服务，支持：
+
+- 🌐 **RESTful API** - 标准的 HTTP API 接口
+- 🖥️ **Web 界面** - 用户友好的查询界面
+- 🔄 **多数据库支持** - 兼容 GeoLite2 和 DB-IP
+- 🚀 **轻量部署** - Docker 支持，一键启动
+- 📊 **实时监控** - 数据库状态和系统监控
+
+### 快速启动 API 服务
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/lwpk110/free-geoip-databases.git
+cd free-geoip-databases
+
+# 2. 下载数据库（使用 DB-IP，无需注册）
+./scripts/download_dbip.sh all
+
+# 3. 启动服务
+make run
+
+# 或使用 Docker
+make docker-run
+```
+
+访问 http://localhost:8080 即可使用 Web 界面查询 IP 地址！
+
+详细文档请查看 [GeoIP API 文档](cmd/geoip-api/README.md)。
 
 ## 📥 快速下载
 

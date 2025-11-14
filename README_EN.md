@@ -32,6 +32,38 @@ No MaxMind account registration needed, no License Key required - download the l
 - 🗂️ **Multiple Databases** - City, Country, ASN and more
 - 🌐 **Multiple Sources** - Both MaxMind GeoLite2 and DB-IP databases
 - ✅ **Quality Assured** - Automated testing ensures database integrity
+- 🚀 **Self-Hosted API** - Ready-to-use GeoIP query API service with Web UI
+
+## 🆕 New Feature: Self-Hosted GeoIP API Service
+
+This project now provides a Golang-based GeoIP query API service with:
+
+- 🌐 **RESTful API** - Standard HTTP API endpoints
+- 🖥️ **Web Interface** - User-friendly query interface
+- 🔄 **Multi-Database Support** - Compatible with GeoLite2 and DB-IP
+- 🚀 **Easy Deployment** - Docker support, one-click start
+- 📊 **Real-time Monitoring** - Database status and system monitoring
+
+### Quick Start API Service
+
+```bash
+# 1. Clone repository
+git clone https://github.com/lwpk110/free-geoip-databases.git
+cd free-geoip-databases
+
+# 2. Download database (using DB-IP, no registration required)
+./scripts/download_dbip.sh all
+
+# 3. Start service
+make run
+
+# Or use Docker
+make docker-run
+```
+
+Visit http://localhost:8080 to use the Web interface for IP queries!
+
+For detailed documentation, see [GeoIP API Documentation](cmd/geoip-api/README.md).
 
 ## 📥 Quick Download
 
