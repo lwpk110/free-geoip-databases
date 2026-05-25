@@ -69,6 +69,19 @@ make docker-run
 
 详细文档请查看 [GeoIP API 文档](cmd/geoip-api/README.md)。
 
+## ✨ 新亮点
+
+- 🔥 **数据库热更新**（轮询自动加载 + 手动触发接口）
+- 🧠 **AI MCP 服务端**（`cmd/geoip-mcp`），可直接被 AI Agent 调用
+- 📦 **批量查询 API**（`POST /api/v1/lookup/batch`）
+- 🧩 **多数据库回退路由**（GeoLite2 / DB-IP 优先级切换）
+- ⚡ **缓存 + 限流 + API Key**（更适合生产环境）
+- 📊 **观测指标接口**（`GET /api/v1/metrics`）
+- 🛠️ **CLI 工具**（`cmd/geoip-cli`，支持本地/远程模式）
+- 📈 **数据质量对比工具**（`cmd/geoip-compare`）
+- 📘 **OpenAPI 规范**（`docs/openapi/geoip-api.yaml`）
+- ☸️ **云原生模板**（`helm/free-geoip`、`docker-compose.prod.yml`）
+
 ## 📥 快速下载
 
 ### MaxMind GeoLite2 数据库

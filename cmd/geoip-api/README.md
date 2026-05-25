@@ -10,6 +10,11 @@
 - ✅ **实时查询** - 快速的 IP 地理位置查询
 - ✅ **完整信息** - 返回国家、城市、经纬度、时区等详细信息
 - ✅ **轻量部署** - 单一二进制文件，易于部署
+- ✅ **热更新** - 数据库文件更新后自动热加载，无需重启
+- ✅ **回退策略** - 多数据库优先级查询，失败自动 fallback
+- ✅ **批量查询** - `POST /api/v1/lookup/batch`
+- ✅ **可观测性** - `GET /api/v1/metrics` 输出运行指标
+- ✅ **安全控制** - API Key 鉴权 + 限流
 
 ## 快速开始
 
@@ -135,13 +140,38 @@ GET /api/v1/health
 }
 ```
 
+### 批量查询
+
+```bash
+curl -X POST http://localhost:8080/api/v1/lookup/batch \
+  -H 'Content-Type: application/json' \
+  -d '{"ips":["8.8.8.8","1.1.1.1"]}'
+```
+
+### 观测指标
+
+```bash
+curl http://localhost:8080/api/v1/metrics
+```
+
+### 手动触发热更新
+
+```bash
+curl -X POST http://localhost:8080/api/v1/admin/reload
+```
+
 ## 环境变量
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `GEOIP_DB_PATH` | GeoIP 数据库文件路径 | `GeoLite2-City.mmdb` |
+| `GEOIP_DB_PATH` | 单个 GeoIP 数据库文件路径 | `GeoLite2-City.mmdb` |
+| `GEOIP_DB_PATHS` | 多数据库路径（逗号分隔，按优先级） | 空 |
 | `PORT` | 服务监听端口 | `8080` |
 | `GIN_MODE` | Gin 运行模式 (debug/release) | `release` |
+| `HOT_RELOAD_INTERVAL` | 热更新轮询周期 | `60s` |
+| `CACHE_TTL` | 查询缓存 TTL | `300s` |
+| `RATE_LIMIT_PER_MIN` | 每分钟请求限额（按 key/IP） | `240` |
+| `API_KEYS` | API Key 列表（逗号分隔） | 空（不启用） |
 
 ## Docker 部署
 

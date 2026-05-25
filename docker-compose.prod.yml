@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  geoip-api:
+    image: ghcr.io/lwpk110/free-geoip-databases:latest
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      GIN_MODE: release
+      GEOIP_DB_PATHS: /data/GeoLite2-City.mmdb,/data/dbip-city-lite.mmdb
+      HOT_RELOAD_INTERVAL: 60s
+      CACHE_TTL: 300s
+      RATE_LIMIT_PER_MIN: 240
+      API_KEYS: ${API_KEYS:-}
+    volumes:
+      - ./data:/data:ro
+    ports:
+      - "8080:8080"

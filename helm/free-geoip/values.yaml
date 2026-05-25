@@ -1,0 +1,19 @@
+image:
+  repository: ghcr.io/lwpk110/free-geoip-databases
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  PORT: "8080"
+  GEOIP_DB_PATHS: "/data/GeoLite2-City.mmdb,/data/dbip-city-lite.mmdb"
+  HOT_RELOAD_INTERVAL: "60s"
+  CACHE_TTL: "300s"
+  RATE_LIMIT_PER_MIN: "240"
+
+apiKeys: ""
+
+resources: {}

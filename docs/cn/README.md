@@ -27,6 +27,14 @@
 - 故障排除指南
 - 自定义测试
 
+### [AI_MCP.md](AI_MCP.md)
+
+AI Agent MCP 集成说明文档。
+
+### [SDK.md](SDK.md)
+
+OpenAPI + SDK 快速接入说明。
+
 ## 主要文档
 
 项目的主要文档位于根目录：

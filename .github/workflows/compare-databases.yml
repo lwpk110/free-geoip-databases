@@ -1,0 +1,54 @@
+name: Compare GeoLite2 vs DB-IP
+
+on:
+  workflow_dispatch:
+    inputs:
+      geolite_url:
+        description: 'GeoLite2-City mmdb download URL'
+        required: true
+      dbip_url:
+        description: 'DB-IP city mmdb download URL'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Download databases
+        run: |
+          curl -L -o geolite.mmdb "${{ github.event.inputs.geolite_url }}"
+          curl -L -o dbip.mmdb "${{ github.event.inputs.dbip_url }}"
+
+      - name: Build sample IP set
+        run: |
+          cat > sample_ips.txt <<'IPS'
+          8.8.8.8
+          1.1.1.1
+          114.114.114.114
+          223.5.5.5
+          208.67.222.222
+          77.88.8.8
+          185.228.168.9
+          IPS
+
+      - name: Compare and generate report
+        run: |
+          go run ./cmd/geoip-compare -geolite ./geolite.mmdb -dbip ./dbip.mmdb -ips ./sample_ips.txt > compare-report.json
+          cat compare-report.json
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geoip-compare-report
+          path: compare-report.json

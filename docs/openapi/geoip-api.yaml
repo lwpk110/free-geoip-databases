@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: Free GeoIP API
+  version: 1.0.0
+  description: GeoIP API with hot reload, fallback lookup, batch lookup and observability endpoints.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/lookup/{ip}:
+    get:
+      summary: Lookup a single IP
+      parameters:
+        - in: path
+          name: ip
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: X-API-Key
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful lookup
+        '400':
+          description: Invalid IP
+        '401':
+          description: Invalid API key
+  /api/v1/lookup/batch:
+    post:
+      summary: Batch lookup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ips]
+              properties:
+                ips:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Batch result
+  /api/v1/status:
+    get:
+      summary: Service status and database health
+      responses:
+        '200':
+          description: Status response
+  /api/v1/metrics:
+    get:
+      summary: Usage metrics
+      responses:
+        '200':
+          description: Metrics response
+  /api/v1/admin/reload:
+    post:
+      summary: Trigger hot reload
+      responses:
+        '200':
+          description: Reload success

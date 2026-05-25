@@ -65,6 +65,19 @@ Visit http://localhost:8080 to use the Web interface for IP queries!
 
 For detailed documentation, see [GeoIP API Documentation](cmd/geoip-api/README.md).
 
+## ✨ New Highlights
+
+- 🔥 **Database hot reload** (zero-downtime reload by polling + manual trigger endpoint)
+- 🧠 **AI MCP server** (`cmd/geoip-mcp`) so AI agents can call GeoIP tools directly
+- 📦 **Batch lookup API** (`POST /api/v1/lookup/batch`)
+- 🧩 **Fallback database routing** (GeoLite2/DB-IP priority switching)
+- ⚡ **Cache + rate limit + API key** for production readiness
+- 📊 **Metrics endpoint** (`GET /api/v1/metrics`) for observability
+- 🛠️ **CLI tool** (`cmd/geoip-cli`) for local/offline and remote API mode
+- 📈 **Data quality compare tool** (`cmd/geoip-compare`) for GeoLite2 vs DB-IP
+- 📘 **OpenAPI spec** (`docs/openapi/geoip-api.yaml`)
+- ☸️ **Cloud-native templates** (`helm/free-geoip`, `docker-compose.prod.yml`)
+
 ## 📥 Quick Download
 
 ### MaxMind GeoLite2 Databases

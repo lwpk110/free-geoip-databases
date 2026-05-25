@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: free-geoip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: free-geoip
+  template:
+    metadata:
+      labels:
+        app: free-geoip
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: {{ .Values.env.PORT | quote }}
+            - name: GEOIP_DB_PATHS
+              value: {{ .Values.env.GEOIP_DB_PATHS | quote }}
+            - name: HOT_RELOAD_INTERVAL
+              value: {{ .Values.env.HOT_RELOAD_INTERVAL | quote }}
+            - name: CACHE_TTL
+              value: {{ .Values.env.CACHE_TTL | quote }}
+            - name: RATE_LIMIT_PER_MIN
+              value: {{ .Values.env.RATE_LIMIT_PER_MIN | quote }}
+            - name: API_KEYS
+              value: {{ .Values.apiKeys | quote }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
