@@ -8,6 +8,9 @@ on:
   # 允许手动触发
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test-database:
     if: github.event_name != 'release' || !startsWith(github.event.release.tag_name, 'dbip-')
