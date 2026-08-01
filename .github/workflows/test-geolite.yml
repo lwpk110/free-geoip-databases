@@ -10,6 +10,7 @@ on:
 
 jobs:
   test-database:
+    if: github.event_name != 'release' || !startsWith(github.event.release.tag_name, 'dbip-')
     runs-on: ubuntu-latest
 
     steps:
