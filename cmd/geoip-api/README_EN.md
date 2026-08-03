@@ -10,6 +10,11 @@ A self-hosted GeoIP query service implemented in Golang, providing RESTful API a
 - ✅ **Real-time Query** - Fast IP geolocation lookup
 - ✅ **Complete Information** - Returns country, city, coordinates, timezone, and more
 - ✅ **Lightweight Deployment** - Single binary, easy to deploy
+- ✅ **Hot Reload** - Auto reload database files without restart
+- ✅ **Fallback Lookup** - Multi-database priority with automatic fallback
+- ✅ **Batch Lookup** - `POST /api/v1/lookup/batch`
+- ✅ **Observability** - `GET /api/v1/metrics` for usage counters
+- ✅ **Security Controls** - API key auth + rate limiting
 
 ## Quick Start
 
@@ -135,13 +140,38 @@ GET /api/v1/health
 }
 ```
 
+### Batch Lookup
+
+```bash
+curl -X POST http://localhost:8080/api/v1/lookup/batch \
+  -H 'Content-Type: application/json' \
+  -d '{"ips":["8.8.8.8","1.1.1.1"]}'
+```
+
+### Metrics
+
+```bash
+curl http://localhost:8080/api/v1/metrics
+```
+
+### Force Hot Reload
+
+```bash
+curl -X POST http://localhost:8080/api/v1/admin/reload
+```
+
 ## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `GEOIP_DB_PATH` | GeoIP database file path | `GeoLite2-City.mmdb` |
+| `GEOIP_DB_PATH` | Single GeoIP database file path | `GeoLite2-City.mmdb` |
+| `GEOIP_DB_PATHS` | Comma separated database paths (fallback priority) | empty |
 | `PORT` | Service listening port | `8080` |
 | `GIN_MODE` | Gin running mode (debug/release) | `release` |
+| `HOT_RELOAD_INTERVAL` | Hot reload poll interval | `60s` |
+| `CACHE_TTL` | Lookup cache TTL | `300s` |
+| `RATE_LIMIT_PER_MIN` | Requests per key/IP per minute | `240` |
+| `API_KEYS` | Comma separated API keys | empty (disabled) |
 
 ## Docker Deployment
 

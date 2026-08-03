@@ -1,55 +1,62 @@
-.PHONY: help build run clean test docker-build docker-run download-db
+.PHONY: help build run clean test docker-build docker-run download-db cli mcp compare
 
 help: ## Show this help message
-	@echo 'Usage: make [target]'
-	@echo ''
-	@echo 'Available targets:'
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+@echo 'Usage: make [target]'
+@echo ''
+@echo 'Available targets:'
+@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-build: ## Build the GeoIP API server
-	@echo "Building GeoIP API server..."
-	cd cmd/geoip-api && go build -o ../../geoip-api .
-	@echo "Build complete: ./geoip-api"
+build: ## Build API and tools
+@echo "Building binaries..."
+cd cmd/geoip-api && go build -o ../../geoip-api .
+cd cmd/geoip-cli && go build -o ../../geoip-cli .
+cd cmd/geoip-mcp && go build -o ../../geoip-mcp .
+cd cmd/geoip-compare && go build -o ../../geoip-compare .
+@echo "Build complete"
 
-run: build ## Build and run the server
-	@echo "Starting GeoIP API server..."
-	./geoip-api
+run: ## Run API server
+@echo "Starting GeoIP API server..."
+cd cmd/geoip-api && go run .
+
+cli: ## Run CLI help
+cd cmd/geoip-cli && go run . -h
+
+mcp: ## Run MCP server (stdio)
+cd cmd/geoip-mcp && go run .
+
+compare: ## Run compare tool help
+cd cmd/geoip-compare && go run . -h
 
 clean: ## Clean build artifacts
-	@echo "Cleaning build artifacts..."
-	rm -f geoip-api
-	rm -f cmd/geoip-api/geoip-api
-	@echo "Clean complete"
+@echo "Cleaning build artifacts..."
+rm -f geoip-api geoip-cli geoip-mcp geoip-compare
+rm -f cmd/geoip-api/geoip-api cmd/geoip-cli/geoip-cli cmd/geoip-mcp/geoip-mcp cmd/geoip-compare/geoip-compare
+@echo "Clean complete"
 
 test: ## Run tests
-	@echo "Running tests..."
-	go test -v ./...
+@echo "Running tests..."
+go test -v ./...
 
 download-db: ## Download DB-IP database (no license required)
-	@echo "Downloading DB-IP database..."
-	./scripts/download_dbip.sh all
-	@echo "Database downloaded successfully"
+@echo "Downloading DB-IP database..."
+./scripts/download_dbip.sh all
+@echo "Database downloaded successfully"
 
 docker-build: ## Build Docker image
-	@echo "Building Docker image..."
-	docker build -t geoip-api:latest .
-	@echo "Docker image built successfully"
+@echo "Building Docker image..."
+docker build -t geoip-api:latest .
+@echo "Docker image built successfully"
 
 docker-run: ## Run Docker container
-	@echo "Running Docker container..."
-	docker-compose up -d
-	@echo "Docker container started. Access at http://localhost:8080"
+@echo "Running Docker container..."
+docker-compose up -d
+@echo "Docker container started. Access at http://localhost:8080"
 
 docker-stop: ## Stop Docker container
-	@echo "Stopping Docker container..."
-	docker-compose down
-	@echo "Docker container stopped"
-
-install: build ## Install the binary to /usr/local/bin
-	@echo "Installing geoip-api to /usr/local/bin..."
-	sudo cp geoip-api /usr/local/bin/
-	@echo "Installation complete"
+@echo "Stopping Docker container..."
+docker-compose down
+@echo "Docker container stopped"
 
 dev: ## Run in development mode
-	@echo "Starting development server..."
-	cd cmd/geoip-api && GIN_MODE=debug go run main.go
+@echo "Starting development server..."
+cd cmd/geoip-api && GIN_MODE=debug go run .

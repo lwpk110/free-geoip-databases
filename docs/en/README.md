@@ -27,6 +27,14 @@ Testing documentation.
 - Troubleshooting guide
 - Custom testing
 
+### [AI_MCP.md](AI_MCP.md)
+
+MCP integration documentation for AI agents.
+
+### [SDK.md](SDK.md)
+
+OpenAPI + SDK integration quick guide.
+
 ## Main Documentation
 
 The main project documentation is located in the root directory:
